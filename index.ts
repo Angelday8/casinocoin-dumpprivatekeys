@@ -52,30 +52,34 @@ inquirer.prompt(locationQuestions).then((result) => {
         console.log('-- found wallet: ' + chalk.yellow(walletName));
     }
   }
-  inquirer.prompt([
-    {
-      type: 'list',
-      name: 'wallet',
-      message: 'Select wallet file',
-      choices: walletFiles
-    }
-  ])
-  .then(answer => {
-    let choosenWallet:any = answer;
-    console.log("Choosen Wallet: " + choosenWallet.wallet);
+  if(walletFiles.length > 0){
     inquirer.prompt([
       {
-        type: 'password',
-        name: 'pass',
-        message: 'Enter Wallet Password'
+        type: 'list',
+        name: 'wallet',
+        message: 'Select wallet file',
+        choices: walletFiles
       }
     ])
-    .then(password => {
-      let walletPassword:any = password;
-      let walletFile = path.join(dirresult['walletPath'], choosenWallet.wallet + ".db.5");
-      actions.getPrivateKeys(walletFile, walletPassword.pass);
+    .then(answer => {
+      let choosenWallet:any = answer;
+      console.log("Choosen Wallet: " + choosenWallet.wallet);
+      inquirer.prompt([
+        {
+          type: 'password',
+          name: 'pass',
+          message: 'Enter Wallet Password'
+        }
+      ])
+      .then(password => {
+        let walletPassword:any = password;
+        let walletFile = path.join(dirresult['walletPath'], choosenWallet.wallet + ".db.5");
+        actions.getPrivateKeys(walletFile, walletPassword.pass);
+      });
     });
-  });
+  } else {
+    console.log(chalk.red('No wallet files found that contain Private Keys'));
+  }
 });
 
 // actions.getPrivateKeys(defaultWalletLocation, walletPassword);
